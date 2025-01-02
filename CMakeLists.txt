@@ -20,4 +20,4 @@ add_executable(Tetris src/main.cpp)
 # Link the library from src/ to the executable
 target_link_libraries(Tetris PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets TetrisCore)
 
-set_target_properties(Tetris PROPERTIES AUTOMOC ON AUTOUIC ON AUTORCC ON)
+set_target_properties(Tetris PROPERTIES AUTOUIC ON AUTORCC ON)

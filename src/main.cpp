@@ -1,38 +1,53 @@
 #include <QApplication>
 #include <QWidget>
 #include <QPainter>
-#include <QKeyEvent>
-#include <iostream>
+#include <QTimer>
 
-class TetrisWindow : public QWidget {
+class AnimatedWindow : public QWidget {
 public:
-    TetrisWindow() {
-        setWindowTitle("Tetris");
-        resize(800, 600);
+    AnimatedWindow() : blockX(100), blockY(100) {
+        setWindowTitle("Tetris Animation");
+        resize(400, 600);
+
+        // Create a timer to trigger updates
+        timer = new QTimer(this);
+        connect(timer, &QTimer::timeout, this, &AnimatedWindow::updateAnimation);
+        timer->start(30); // Trigger every 50ms (~20 FPS)
     }
 
 protected:
     void paintEvent(QPaintEvent* event) override {
         QPainter painter(this);
-        painter.setBrush(Qt::green);
-        painter.drawRect(100, 100, 50, 50);  // Example of drawing a "Tetris block"
+
+        // Draw the moving block
+        painter.setBrush(Qt::blue);
+        painter.drawRect(blockX, blockY, 50, 50);
     }
 
-    void keyPressEvent(QKeyEvent* event) override {
-        if (event->key() == Qt::Key_Left) {
-            std::cout << "Move left" << std::endl;
-        } else if (event->key() == Qt::Key_Right) {
-            std::cout << "Move right" << std::endl;
+private slots:
+    void updateAnimation() {
+        // Update block position
+        blockY += 5;
+
+        // Reset position if it moves out of the screen
+        if (blockY > height()) {
+            blockY = -50; // Reset above the top of the screen
         }
-        QWidget::keyPressEvent(event);
+
+        // Trigger a repaint
+        update();
     }
+
+private:
+    int blockX, blockY;
+    QTimer* timer;
 };
 
 int main(int argc, char *argv[]) {
-  QApplication app(argc, argv);
+    QApplication app(argc, argv);
 
-  TetrisWindow window;
-  window.show();
+    AnimatedWindow window;
+    window.show();
 
-  return app.exec();
+    return app.exec();
 }
