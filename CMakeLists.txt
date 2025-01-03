@@ -1,23 +1,22 @@
-# Minimum version of CMake
 cmake_minimum_required(VERSION 3.10)
 
-# Project name and version
 project(Tetris VERSION 1.0)
 
-# Specify C++ standard
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_PREFIX_PATH "/usr/local/Cellar/qt/6.7.3/lib/cmake")
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)  
+set(CMAKE_AUTORCC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 
-# Add source and header files
-include_directories(include)
-add_subdirectory(src)
+# include_directories(include)
 
-# Create the executable target
-add_executable(Tetris src/main.cpp)
+file(GLOB_RECURSE SOURCES src/*.cpp)
+file(GLOB_RECURSE HEADERS include/*.h)
 
-# Link the library from src/ to the executable
-target_link_libraries(Tetris PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets TetrisCore)
+add_executable(Tetris ${SOURCES} ${HEADERS})
 
-set_target_properties(Tetris PROPERTIES AUTOUIC ON AUTORCC ON)
+target_link_libraries(Tetris PUBLIC Qt6::Core Qt6::Gui Qt6::Widgets)
