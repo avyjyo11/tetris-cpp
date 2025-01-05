@@ -1,8 +1,8 @@
 #include "../include/Block.h"
 #include <QRect>
 
-Block::Block(int cellSize, int blockSpeed)
-    : cellSize(cellSize), blockSpeed(blockSpeed), rect(0, 0, cellSize, cellSize) {}
+Block::Block(int x, int y)
+    : rect(x, y, CELL_SIZE, CELL_SIZE) {}
 
 QRect Block::getRect() const {
     return rect;
@@ -20,6 +20,6 @@ void Block::moveDown() {
     rect.moveTop(rect.top() + blockSpeed);
 }
 
-void Block::reset(int startX, int startY) {
-    rect.moveTo(startX, startY);
+void Block::reset() {
+    rect.moveTo(0, rect.left());
 }

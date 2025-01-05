@@ -3,21 +3,23 @@
 
 #include <QRect>
 
+#define CELL_SIZE 32
+
 class Block {
 public:
-    explicit Block(int cellSize = 40, int blockSpeed = 5); 
+    explicit Block(int x = 0, int y = 0);
 
     QRect getRect() const; 
 
     void moveLeft();   
     void moveRight();   
     void moveDown();   
-    void reset(int startX, int startY);
+    void reset();
 
 private:
-    QRect rect;  
-    int cellSize; 
-    int blockSpeed; 
+    QRect rect;
+    int cellSize = CELL_SIZE; 
+    int blockSpeed = CELL_SIZE;
 };
 
 #endif // BLOCK_H
