@@ -46,7 +46,7 @@ std::map<TetrominoType, std::vector<std::vector<uint8_t>>> tetrominoGrids = {
 Tetromino::Tetromino(TetrominoType type) {
     grid = tetrominoGrids[type];
     x = 3;
-    y = 0;
+    y = -3;
 }
 
 std::vector<std::vector<uint8_t>>* Tetromino::getGrid() {
@@ -87,7 +87,7 @@ void Tetromino::reset() {
     TetrominoType randType = static_cast<TetrominoType>(rand() % 7);
     grid = tetrominoGrids[randType];
     x = 3;
-    y = 0;
+    y = -3;
 }
 
 void Tetromino::draw(QPainter &painter) const {

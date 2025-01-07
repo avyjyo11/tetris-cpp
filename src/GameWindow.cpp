@@ -16,7 +16,7 @@ GameWindow::GameWindow(QWidget *parent): QWidget(parent), blockSpeed(CELL_SIZE) 
 
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &GameWindow::updateAnimation);
-    timer->start(1000); // Update every 100 ms
+    timer->stop(); // Update every 100 ms
 }
 
 GameWindow::~GameWindow() {
@@ -64,14 +64,40 @@ void GameWindow::keyReleaseEvent(QKeyEvent *event) {
     }
 }
 
-void GameWindow::startAnimation() {
-    // Reset block position and start timer
-    printf("startAnimation");
-    // timer->start(30); // 30ms interval for smooth animation
+void GameWindow::startGame() {
+    if (!running) {
+        timer->start(1000);
+        running = true;
+    }
 }
 
-void GameWindow::stopAnimation() {
+void GameWindow::pauseGame() {
+    if (running) {
+        timer->stop();
+        running = false;
+    }
+}
+
+bool GameWindow::isRunning() const {
+    return running;
+}
+
+unsigned int GameWindow::getScore() const {
+    return score;
+}
+
+void GameWindow::restartGame() {
     timer->stop();
+
+    memset(grid, 0, sizeof(grid));
+    tetromino.reset();
+    
+    timer->start(1000);
+    running = true;
+}
+
+void GameWindow::updateScore(unsigned int points) {
+    score += points;
 }
 
 void GameWindow::drawGrid(QPainter &painter) {
@@ -96,6 +122,7 @@ void GameWindow::drawGrid(QPainter &painter) {
 void GameWindow::updateAnimation() {
     if (canMoveBlock(0, 1)) {
         tetromino.moveDown();
+        updateScore(1);
     } else {
         plotBlock();
         clearLines();
@@ -120,12 +147,16 @@ void GameWindow::plotBlock() {
 bool GameWindow::canMoveBlock(int dx, int dy) {
     auto tGrid = tetromino.getGrid();
 
+    if (tetromino.getY() < 0) {
+        return true;
+    }
+
     for (size_t i = 0; i < tGrid->size(); i++) {
         for (size_t j = 0; j < tGrid->size(); j++) {
             if ((*tGrid)[i][j] == 1) {
                 int newRow = tetromino.getY() + i + dy;
                 int newCol = tetromino.getX() + j + dx;
-                if (newRow < 0 || newRow >= ROWS || newCol < 0 || newCol >= COLS || grid[newRow][newCol] == 1) {
+                if (newRow >= ROWS || newCol < 0 || newCol >= COLS || grid[newRow][newCol] == 1) {
                     return false;
                 }
             }
@@ -150,6 +181,7 @@ void GameWindow::clearLines() {
             }
             memset(grid[0], 0, sizeof(uint8_t) * COLS);
             row++;
+            updateScore(10);
         }
     }
 }

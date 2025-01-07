@@ -19,8 +19,11 @@ public:
     explicit GameWindow(QWidget *parent = nullptr);
     ~GameWindow();
 
-    void startAnimation();
-    void stopAnimation();
+    void startGame();
+    void pauseGame();
+    void restartGame();
+    bool isRunning() const;
+    unsigned int getScore() const;
 
 protected:
     void paintEvent(QPaintEvent *event) override; 
@@ -31,19 +34,23 @@ private slots:
     void updateAnimation();
 
 private:
-    QTimer *timer;  
     int blockSpeed;
+    QTimer *timer; 
     Block block;
     Tetromino tetromino;
+
+    bool running = false; 
     bool isMovingDown = false;
 
     uint8_t grid[ROWS][COLS]; 
     const int cellSize = CELL_SIZE;
+    unsigned int score;
 
     void plotBlock();         
     void drawGrid(QPainter &painter);
     bool canMoveBlock(int dx, int dy);
     void clearLines();
+    void updateScore(unsigned int points);
 };
 
 #endif // GAMEWINDOW_H

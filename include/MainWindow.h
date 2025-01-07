@@ -14,6 +14,7 @@ public:
 
 private slots:
     void handlePlayButton();
+    void handleRestartButton();
     
 private:
     QPushButton *playButton;
