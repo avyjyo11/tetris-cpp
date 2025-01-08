@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QPushButton>
+#include <QLabel>
 #include "../include/GameWindow.h"
 
 class MainWindow : public QMainWindow {
@@ -15,10 +16,12 @@ public:
 private slots:
     void handlePlayButton();
     void handleRestartButton();
+    void updateScoreDisplay(unsigned int newScore); 
     
 private:
     QPushButton *playButton;
     QPushButton *restartButton;
+    QLabel *scoreLabel;
     GameWindow *gameWindow;
 
     void setupUI();

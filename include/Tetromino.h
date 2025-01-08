@@ -1,33 +1,30 @@
 #ifndef TETRIMINO_H
 #define TETRIMINO_H
 
-#include <map>
+#include "../include/Block.h"
 
+#include <map>
 #include <QRect>
 #include <QPainter>
 
-enum TetrominoType : uint8_t {
-    I, J, L, O, S, T, Z
+enum class TetrominoType : uint8_t {
+    I = 0, J, L, O, S, T, Z
 };
 
-class Tetromino {
+class Tetromino: public Block {
 public:
-    explicit Tetromino(TetrominoType type = TetrominoType::L);
+    explicit Tetromino();
 
-    void rotate();
-    void moveLeft();
-    void moveRight();
-    void moveDown();
-    void reset();
-    void draw(QPainter &painter) const;
+    void rotate() override;
+    void draw(QPainter &painter) const override;
 
     std::vector<std::vector<uint8_t>>* getGrid();
     int getX();
     int getY();
+    RGB getColor();
 
 private:
-    std::vector<std::vector<uint8_t>> grid;
-    int x, y;
+    void reset();
 };
 
 #endif // TETRIMINO_H

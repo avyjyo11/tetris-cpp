@@ -8,19 +8,20 @@
 #include <QPainter>
 #include <QKeyEvent>
 
-GameWindow::GameWindow(QWidget *parent): QWidget(parent), blockSpeed(CELL_SIZE) {
+GameWindow::GameWindow(QWidget *parent): QWidget(parent), blockSpeed(CELL_SIZE), grid(ROWS, std::vector<std::optional<RGB>>(COLS, std::nullopt)) {
     setMinimumSize(cellSize * COLS, cellSize * ROWS);
     setFocusPolicy(Qt::StrongFocus);
-    // Initialize grid to all 0s
-    memset(grid, 0, sizeof(grid));
 
+    block = new Tetromino();
     timer = new QTimer(this);
+    
     connect(timer, &QTimer::timeout, this, &GameWindow::updateAnimation);
     timer->stop(); // Update every 100 ms
 }
 
 GameWindow::~GameWindow() {
     delete timer;
+    delete block;
 }
 
 void GameWindow::paintEvent(QPaintEvent *event) {
@@ -29,23 +30,23 @@ void GameWindow::paintEvent(QPaintEvent *event) {
     painter.fillRect(rect(), Qt::black);
     // Placeholder for drawing blocks (later replaced by actual Tetris logic)
     drawGrid(painter);
-    tetromino.draw(painter);
+    block->draw(painter);
 }
 
 void GameWindow::keyPressEvent(QKeyEvent *event) {
     switch (event->key()) {
     case Qt::Key_Left:
         if (canMoveBlock(-1, 0)) {
-            tetromino.moveLeft();
+            block->moveLeft();
         }
         break;
     case Qt::Key_Right:
         if (canMoveBlock(1, 0)) {
-            tetromino.moveRight();
+            block->moveRight();
         }
         break;
     case Qt::Key_Up:
-        tetromino.rotate();
+        block->rotate();
         break;
     case Qt::Key_Down:
         if (!isMovingDown) { 
@@ -89,15 +90,20 @@ unsigned int GameWindow::getScore() const {
 void GameWindow::restartGame() {
     timer->stop();
 
-    memset(grid, 0, sizeof(grid));
-    tetromino.reset();
+    for (auto& row : grid) {
+        std::fill(row.begin(), row.end(), std::nullopt);
+    }
     
+    delete block;
+    block = new Tetromino();
+
     timer->start(1000);
     running = true;
 }
 
 void GameWindow::updateScore(unsigned int points) {
     score += points;
+    emit scoreUpdated(score); 
 }
 
 void GameWindow::drawGrid(QPainter &painter) {
@@ -108,8 +114,10 @@ void GameWindow::drawGrid(QPainter &painter) {
         for (int col = 0; col < COLS; ++col) {
             QRect cell(col * cellSize, row * cellSize, cellSize, cellSize);
             // Draw filled cells
-            if (grid[row][col] == 1) {
-                painter.setBrush(Qt::green);
+            if (grid[row][col].has_value()) {
+                RGB rgb = grid[row][col].value();
+                QColor color(rgb.r, rgb.g, rgb.b);
+                painter.setBrush(color);
                 painter.drawRect(cell);
             }
             // Draw grid lines
@@ -121,42 +129,43 @@ void GameWindow::drawGrid(QPainter &painter) {
 
 void GameWindow::updateAnimation() {
     if (canMoveBlock(0, 1)) {
-        tetromino.moveDown();
+        block->moveDown();
         updateScore(1);
     } else {
         plotBlock();
         clearLines();
-        tetromino.reset();
+        delete block;
+        block = new Tetromino();
     }
     update();
 }
 
 void GameWindow::plotBlock() {
-    auto tGrid = tetromino.getGrid();
+    auto tGrid = block->getGrid();
     for (size_t i = 0; i < tGrid->size(); i++) {
         for (size_t j = 0; j < tGrid->size(); j++) {
             if ((*tGrid)[i][j] == 1) {
-                int row = tetromino.getY() + i;
-                int col = tetromino.getX() + j;
-                grid[row][col] = 1;
+                int row = block->getY() + i;
+                int col = block->getX() + j;
+                grid[row][col] = block->getColor();
             }
         }
     }
 }
 
 bool GameWindow::canMoveBlock(int dx, int dy) {
-    auto tGrid = tetromino.getGrid();
+    auto tGrid = block->getGrid();
 
-    if (tetromino.getY() < 0) {
+    if (block->getY() < 0) {
         return true;
     }
 
     for (size_t i = 0; i < tGrid->size(); i++) {
         for (size_t j = 0; j < tGrid->size(); j++) {
             if ((*tGrid)[i][j] == 1) {
-                int newRow = tetromino.getY() + i + dy;
-                int newCol = tetromino.getX() + j + dx;
-                if (newRow >= ROWS || newCol < 0 || newCol >= COLS || grid[newRow][newCol] == 1) {
+                int newRow = block->getY() + i + dy;
+                int newCol = block->getX() + j + dx;
+                if (newRow >= ROWS || newCol < 0 || newCol >= COLS || grid[newRow][newCol].has_value()) {
                     return false;
                 }
             }
@@ -170,16 +179,16 @@ void GameWindow::clearLines() {
     for (int row = ROWS - 1; row >= 0; --row) {
         bool fullLine = true;
         for (int col = 0; col < COLS; ++col) {
-            if (grid[row][col] == 0) {
+            if (grid[row][col] == std::nullopt) {
                 fullLine = false;
                 break;
             }
         }
         if (fullLine) {
             for (int r = row; r > 0; --r) {
-                memcpy(grid[r], grid[r - 1], sizeof(uint8_t) * COLS);
+                grid[r] = grid[r - 1];
             }
-            memset(grid[0], 0, sizeof(uint8_t) * COLS);
+            grid[0] = std::vector<std::optional<RGB>>(COLS, std::nullopt);
             row++;
             updateScore(10);
         }

@@ -8,10 +8,22 @@
 #include <QTimer>
 #include <QRect>
 #include <QKeyEvent>
+#include <map>
+#include <vector>
+#include <optional>
 
 #define ROWS 20
 #define COLS 10
 
+enum class Colors : uint8_t {
+    Salmon,
+    Orange,
+    Yellow,
+    Green,
+    Cyan,
+    Purple,
+    Red,
+};
 class GameWindow : public QWidget {
     Q_OBJECT
 
@@ -30,19 +42,23 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
 
+signals:
+    void scoreUpdated(unsigned int newScore); 
+    
 private slots:
     void updateAnimation();
 
 private:
     int blockSpeed;
     QTimer *timer; 
-    Block block;
-    Tetromino tetromino;
+    Block* block;
 
     bool running = false; 
     bool isMovingDown = false;
 
-    uint8_t grid[ROWS][COLS]; 
+    // uint8_t grid[ROWS][COLS];
+    std::vector<std::vector<std::optional<RGB>>> grid;
+    
     const int cellSize = CELL_SIZE;
     unsigned int score;
 

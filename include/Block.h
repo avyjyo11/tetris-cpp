@@ -1,25 +1,36 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
-#include <QRect>
+#include <vector>
+#include <QPainter>
 
 #define CELL_SIZE 32
 
+struct RGB {
+    uint8_t r, g, b;
+};
+
 class Block {
 public:
-    explicit Block(int x = 0, int y = 0);
+    Block();
+    virtual ~Block() = default;
+    
+    virtual void rotate();
+    virtual void draw(QPainter &painter) const = 0;
 
-    QRect getRect() const; 
+    void moveLeft();
+    void moveRight();
+    void moveDown();
+    
+    std::vector<std::vector<uint8_t>>* getGrid();
+    int getX() const;
+    int getY() const;
+    RGB getColor() const;
 
-    void moveLeft();   
-    void moveRight();   
-    void moveDown();   
-    void reset();
-
-private:
-    QRect rect;
-    int cellSize = CELL_SIZE; 
-    int blockSpeed = CELL_SIZE;
+protected:
+    std::vector<std::vector<uint8_t>> grid;
+    RGB color;
+    int x, y;
 };
 
 #endif // BLOCK_H

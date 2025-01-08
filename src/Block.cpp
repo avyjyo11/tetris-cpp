@@ -1,25 +1,38 @@
 #include "../include/Block.h"
-#include <QRect>
+#include "../include/GameWindow.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
 
-Block::Block(int x, int y)
-    : rect(x, y, CELL_SIZE, CELL_SIZE) {}
-
-QRect Block::getRect() const {
-    return rect;
+Block::Block() : x(3), y(-1) {
 }
 
+void Block::rotate() {}
+
 void Block::moveLeft() {
-    rect.moveLeft(rect.left() - cellSize);
+    x -= 1;
 }
 
 void Block::moveRight() {
-    rect.moveRight(rect.right() + cellSize);
+    x += 1;
 }
 
 void Block::moveDown() {
-    rect.moveTop(rect.top() + blockSpeed);
+    y += 1;
 }
 
-void Block::reset() {
-    rect.moveTo(0, rect.left());
+std::vector<std::vector<uint8_t>>* Block::getGrid() {
+    return &grid;
+}
+
+int Block::getX() const {
+    return x;
+}
+
+int Block::getY() const {
+    return y;
+}
+
+RGB Block::getColor() const {
+    return color;
 }

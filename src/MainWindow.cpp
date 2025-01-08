@@ -38,7 +38,7 @@ void MainWindow::setupUI() {
     QVBoxLayout *scoreLayout = new QVBoxLayout(scoreWidget);
 
     QLabel *levelLabel = new QLabel("Level: 1", this);
-    QLabel *scoreLabel = new QLabel("Score: 0", this);
+    scoreLabel = new QLabel("Score: 0", this);
     
     scoreLayout->addWidget(levelLabel);
     scoreLayout->addWidget(scoreLabel);
@@ -65,6 +65,8 @@ void MainWindow::setupUI() {
     // Connect signals
     connect(playButton, &QPushButton::clicked, this, &MainWindow::handlePlayButton);
     connect(restartButton, &QPushButton::clicked, this, &MainWindow::handleRestartButton);
+    connect(gameWindow, &GameWindow::scoreUpdated, this, &MainWindow::updateScoreDisplay); 
+
     gameWindow->setFocus();
 }
 
