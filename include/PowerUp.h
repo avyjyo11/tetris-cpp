@@ -1,30 +1,31 @@
-#ifndef TETRIMINO_H
-#define TETRIMINO_H
+#ifndef POWERUP_H
+#define POWERUP_H
+
+#include "Block.h"
 
 #include <map>
-
-#include <QRect>
+#include <QImage>
 #include <QPainter>
 
-
-class PowerUp {
-public:
-    explicit PowerUp();
-
-    void rotate();
-    void moveLeft();
-    void moveRight();
-    void moveDown();
-    void reset();
-    void draw(QPainter &painter) const;
-
-    std::vector<std::vector<uint8_t>>* getGrid();
-    int getX();
-    int getY();
-
-private:
-    std::vector<std::vector<uint8_t>> grid;
-    int x, y;
+enum class PowerUpType : uint8_t {
+    Clear,
+    Bomb,
+    Color
 };
 
-#endif // TETRIMINO_H
+class PowerUp : public Block {
+public:
+    explicit PowerUp(PowerUpType type);
+    ~PowerUp();
+
+    void rotate() override;
+    void draw(QPainter &painter) const override;
+
+    void activate(std::vector<std::vector<std::optional<RGB>>>& grid) override;
+
+private:
+    PowerUpType type;
+    QImage image;
+};
+
+#endif // POWERUP_H

@@ -1,4 +1,3 @@
-#include "../include/Block.h"
 #include "../include/GameWindow.h"
 
 #include <iostream>
@@ -8,11 +7,12 @@
 #include <QPainter>
 #include <QKeyEvent>
 
-GameWindow::GameWindow(QWidget *parent): QWidget(parent), blockSpeed(CELL_SIZE), grid(ROWS, std::vector<std::optional<RGB>>(COLS, std::nullopt)) {
+GameWindow::GameWindow(QWidget *parent, NextWindow *next)
+    : QWidget(parent), nextWindow(next), blockSpeed(CELL_SIZE), grid(ROWS, std::vector<std::optional<RGB>>(COLS, std::nullopt)) {
     setMinimumSize(cellSize * COLS, cellSize * ROWS);
     setFocusPolicy(Qt::StrongFocus);
 
-    block = new Tetromino();
+    block = next->getNextBlock();
     timer = new QTimer(this);
     
     connect(timer, &QTimer::timeout, this, &GameWindow::updateAnimation);
@@ -20,8 +20,6 @@ GameWindow::GameWindow(QWidget *parent): QWidget(parent), blockSpeed(CELL_SIZE),
 }
 
 GameWindow::~GameWindow() {
-    delete timer;
-    delete block;
 }
 
 void GameWindow::paintEvent(QPaintEvent *event) {
@@ -94,8 +92,7 @@ void GameWindow::restartGame() {
         std::fill(row.begin(), row.end(), std::nullopt);
     }
     
-    delete block;
-    block = new Tetromino();
+    block = nextWindow->getNextBlock();
 
     timer->start(1000);
     running = true;
@@ -132,26 +129,13 @@ void GameWindow::updateAnimation() {
         block->moveDown();
         updateScore(1);
     } else {
-        plotBlock();
+        block->activate(grid);
         clearLines();
-        delete block;
-        block = new Tetromino();
+        block = nextWindow->getNextBlock();
     }
     update();
 }
 
-void GameWindow::plotBlock() {
-    auto tGrid = block->getGrid();
-    for (size_t i = 0; i < tGrid->size(); i++) {
-        for (size_t j = 0; j < tGrid->size(); j++) {
-            if ((*tGrid)[i][j] == 1) {
-                int row = block->getY() + i;
-                int col = block->getX() + j;
-                grid[row][col] = block->getColor();
-            }
-        }
-    }
-}
 
 bool GameWindow::canMoveBlock(int dx, int dy) {
     auto tGrid = block->getGrid();

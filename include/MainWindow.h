@@ -1,10 +1,12 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "GameWindow.h"
+#include "NextWindow.h"
+
 #include <QMainWindow>
 #include <QPushButton>
 #include <QLabel>
-#include "../include/GameWindow.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -22,7 +24,9 @@ private:
     QPushButton *playButton;
     QPushButton *restartButton;
     QLabel *scoreLabel;
+    
     GameWindow *gameWindow;
+    NextWindow *nextWindow;
 
     void setupUI();
 };

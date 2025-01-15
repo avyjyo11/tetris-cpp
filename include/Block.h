@@ -1,14 +1,11 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
+#include "Colors.h"
 #include <vector>
 #include <QPainter>
 
 #define CELL_SIZE 32
-
-struct RGB {
-    uint8_t r, g, b;
-};
 
 class Block {
 public:
@@ -17,15 +14,18 @@ public:
     
     virtual void rotate();
     virtual void draw(QPainter &painter) const = 0;
+    virtual void activate(std::vector<std::vector<std::optional<RGB>>>& grid) = 0;
 
     void moveLeft();
     void moveRight();
     void moveDown();
+    void setPos(int x, int y);
     
     std::vector<std::vector<uint8_t>>* getGrid();
     int getX() const;
     int getY() const;
     RGB getColor() const;
+
 
 protected:
     std::vector<std::vector<uint8_t>> grid;

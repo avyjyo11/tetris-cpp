@@ -1,7 +1,7 @@
 #ifndef TETRIMINO_H
 #define TETRIMINO_H
 
-#include "../include/Block.h"
+#include "Block.h"
 
 #include <map>
 #include <QRect>
@@ -13,10 +13,11 @@ enum class TetrominoType : uint8_t {
 
 class Tetromino: public Block {
 public:
-    explicit Tetromino();
+    explicit Tetromino(TetrominoType type);
 
     void rotate() override;
     void draw(QPainter &painter) const override;
+    void activate(std::vector<std::vector<std::optional<RGB>>>& grid) override;
 
     std::vector<std::vector<uint8_t>>* getGrid();
     int getX();
@@ -24,7 +25,7 @@ public:
     RGB getColor();
 
 private:
-    void reset();
+    TetrominoType type;
 };
 
 #endif // TETRIMINO_H

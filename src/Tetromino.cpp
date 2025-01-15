@@ -43,18 +43,11 @@ std::map<TetrominoType, std::vector<std::vector<uint8_t>>> tetrominoGrids = {
     }}
 };
 
-std::map<Colors, RGB> ColorsMap = {
-    {Colors::Salmon, {250, 128, 114}},
-    {Colors::Orange, {255, 200, 46}},
-    {Colors::Yellow, {254, 251, 52}},
-    {Colors::Green, {83, 218, 63}},
-    {Colors::Cyan, {1, 237, 250}},
-    {Colors::Purple, {221, 10, 178}},
-    {Colors::Red, {234, 20, 28}},
-};
+Tetromino::Tetromino(TetrominoType type): Block(), type(type) {
+    grid = tetrominoGrids[type];
 
-Tetromino::Tetromino() {
-    reset();
+    Color randColor = static_cast<Color>(rand() % 7);
+    color = Colors::Mapper.at(randColor);
 }
 
 void Tetromino::rotate() {
@@ -67,17 +60,6 @@ void Tetromino::rotate() {
     grid = newGrid;
 }
 
-void Tetromino::reset() {
-    TetrominoType randType = static_cast<TetrominoType>(rand() % 7);
-    grid = tetrominoGrids[randType];
-
-    Colors randColor = static_cast<Colors>(rand() % 7);
-    color = ColorsMap[randColor];
-
-    x = 3;
-    y = -1;
-}
-
 void Tetromino::draw(QPainter &painter) const {
     for (size_t i = 0 ; i < grid.size(); i++) {
         for (size_t j = 0; j < grid.size(); j++) {
@@ -85,6 +67,18 @@ void Tetromino::draw(QPainter &painter) const {
                 QColor qcolor(color.r, color.g, color.b);
                 painter.setBrush(qcolor);
                 painter.drawRect((x + j) * CELL_SIZE, (y + i) * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            }
+        }
+    }
+}
+
+void Tetromino::activate(std::vector<std::vector<std::optional<RGB>>>& gameGrid) {
+    for (size_t i = 0; i < grid.size(); i++) {
+        for (size_t j = 0; j < grid.size(); j++) {
+            if (grid[i][j] == 1) {
+                int row = y + i;
+                int col = x + j;
+                gameGrid[row][col] = color;
             }
         }
     }

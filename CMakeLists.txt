@@ -12,11 +12,16 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 
-# include_directories(include)
-
 file(GLOB_RECURSE SOURCES src/*.cpp)
 file(GLOB_RECURSE HEADERS include/*.h)
 
 add_executable(Tetris ${SOURCES} ${HEADERS})
 
 target_link_libraries(Tetris PUBLIC Qt6::Core Qt6::Gui Qt6::Widgets)
+
+qt_add_resources(Tetris "app_images"
+    FILES
+        images/bomb.png
+        images/clear.png
+        images/color.png
+)

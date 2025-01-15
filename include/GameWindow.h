@@ -1,8 +1,8 @@
 #ifndef GameWINDOW_H
 #define GameWINDOW_H
 
-#include "../include/Block.h"
-#include "../include/Tetromino.h"
+#include "Block.h"
+#include "NextWindow.h"
 
 #include <QWidget>
 #include <QTimer>
@@ -10,25 +10,17 @@
 #include <QKeyEvent>
 #include <map>
 #include <vector>
+#include <memory>
 #include <optional>
 
 #define ROWS 20
 #define COLS 10
 
-enum class Colors : uint8_t {
-    Salmon,
-    Orange,
-    Yellow,
-    Green,
-    Cyan,
-    Purple,
-    Red,
-};
 class GameWindow : public QWidget {
     Q_OBJECT
 
 public:
-    explicit GameWindow(QWidget *parent = nullptr);
+    explicit GameWindow(QWidget *parent = nullptr, NextWindow *next = nullptr);
     ~GameWindow();
 
     void startGame();
@@ -50,8 +42,9 @@ private slots:
 
 private:
     int blockSpeed;
-    QTimer *timer; 
-    Block* block;
+    QTimer *timer;
+    NextWindow *nextWindow;
+    std::shared_ptr<Block> block;
 
     bool running = false; 
     bool isMovingDown = false;

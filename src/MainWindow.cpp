@@ -16,9 +16,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), playButton(nullpt
 
 MainWindow::~MainWindow() {
     // Cleanup handled automatically by Qt
-    delete playButton;
-    delete restartButton;
     delete gameWindow;
+    delete nextWindow;
 }
 
 void MainWindow::setupUI() {
@@ -30,8 +29,12 @@ void MainWindow::setupUI() {
     QSplitter *splitter = new QSplitter(Qt::Horizontal, this);
 
     // Create game window
-    gameWindow = new GameWindow(this);
+    nextWindow = new NextWindow(this);
+    gameWindow = new GameWindow(this, nextWindow);
     splitter->addWidget(gameWindow);
+
+    QWidget *rightPanel = new QWidget(this);
+    QVBoxLayout *rightLayout = new QVBoxLayout(rightPanel);
 
     // Create score display widget
     QWidget *scoreWidget = new QWidget(this);
@@ -44,10 +47,16 @@ void MainWindow::setupUI() {
     scoreLayout->addWidget(scoreLabel);
     
     scoreWidget->setFixedWidth(200);
-    splitter->addWidget(scoreWidget);
+    scoreWidget->setFixedHeight(100);
+    
+    rightLayout->addWidget(scoreWidget);
+    rightLayout->addWidget(nextWindow);
 
     playButton = new QPushButton("Play", this);
     restartButton = new QPushButton("Restart", this);
+
+    QVBoxLayout *nextLayout = new QVBoxLayout(nextWindow);
+    scoreLayout->addLayout(nextLayout);
 
     // Layout for buttons
     QVBoxLayout *buttonLayout = new QVBoxLayout();
@@ -56,8 +65,9 @@ void MainWindow::setupUI() {
     buttonLayout->addWidget(restartButton);
 
     // Add button layout to score widget
-    scoreLayout->addLayout(buttonLayout);
-
+    rightLayout->addLayout(buttonLayout);
+    splitter->addWidget(rightPanel);
+    
     // Set the splitter as the central widget's layout
     QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
     mainLayout->addWidget(splitter);

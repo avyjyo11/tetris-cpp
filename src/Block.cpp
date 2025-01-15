@@ -4,10 +4,15 @@
 #include <stdio.h>
 #include <time.h>
 
-Block::Block() : x(3), y(-1) {
+Block::Block() : x(1), y(1) {
 }
 
 void Block::rotate() {}
+
+void Block::setPos(int _x, int _y) {
+    x = _x;
+    y = _y;
+}
 
 void Block::moveLeft() {
     x -= 1;
