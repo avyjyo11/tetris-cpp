@@ -6,12 +6,14 @@
 #include <QSplitter>
 #include <QLabel>
 #include <QWidget>
+#include <QFileDialog>
 #include <QPushButton>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), playButton(nullptr), restartButton(nullptr), gameWindow(nullptr) {
     setWindowTitle("Tetris Game");
     // resize(400, 600); // Adjust to fit Tetris gameplay area
     setupUI();
+    soundManager = new SoundManager();
 }
 
 MainWindow::~MainWindow() {
@@ -54,6 +56,7 @@ void MainWindow::setupUI() {
 
     playButton = new QPushButton("Play", this);
     restartButton = new QPushButton("Restart", this);
+    QPushButton *loadMusicButton = new QPushButton("Load Music", this);
 
     QVBoxLayout *nextLayout = new QVBoxLayout(nextWindow);
     scoreLayout->addLayout(nextLayout);
@@ -63,6 +66,7 @@ void MainWindow::setupUI() {
     buttonLayout->addStretch(); // Push buttons to the bottom
     buttonLayout->addWidget(playButton);
     buttonLayout->addWidget(restartButton);
+    buttonLayout->addWidget(loadMusicButton);
 
     // Add button layout to score widget
     rightLayout->addLayout(buttonLayout);
@@ -76,6 +80,7 @@ void MainWindow::setupUI() {
     connect(playButton, &QPushButton::clicked, this, &MainWindow::handlePlayButton);
     connect(restartButton, &QPushButton::clicked, this, &MainWindow::handleRestartButton);
     connect(gameWindow, &GameWindow::scoreUpdated, this, &MainWindow::updateScoreDisplay); 
+    connect(loadMusicButton, &QPushButton::clicked, this, &MainWindow::loadMusic);
 
     gameWindow->setFocus();
 }
@@ -83,9 +88,11 @@ void MainWindow::setupUI() {
 void MainWindow::handlePlayButton() {
     if (gameWindow->isRunning()) {
         gameWindow->pauseGame();
+        soundManager->pauseMusic();
         playButton->setText("Resume"); // Change button text to "Resume"
     } else {
         gameWindow->startGame();
+        soundManager->playMusic();
         playButton->setText("Pause"); // Change button text to "Pause"
     }
 }
@@ -97,4 +104,11 @@ void MainWindow::handleRestartButton() {
 
 void MainWindow::updateScoreDisplay(unsigned int newScore) { // Change parameter type to unsigned int
    scoreLabel->setText(QString("Score: %1").arg(newScore));
+}
+
+void MainWindow::loadMusic() {
+    QString filePath = QFileDialog::getOpenFileName(this, "Load Music", "", "Audio Files (*.mp3 *.wav *.aac)");
+    if (!filePath.isEmpty()) {
+        soundManager->loadMusic(filePath);
+    }
 }

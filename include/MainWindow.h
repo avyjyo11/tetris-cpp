@@ -3,6 +3,7 @@
 
 #include "GameWindow.h"
 #include "NextWindow.h"
+#include "SoundManager.h"
 
 #include <QMainWindow>
 #include <QPushButton>
@@ -16,6 +17,7 @@ public:
     ~MainWindow();
 
 private slots:
+    void loadMusic();
     void handlePlayButton();
     void handleRestartButton();
     void updateScoreDisplay(unsigned int newScore); 
@@ -27,6 +29,7 @@ private:
     
     GameWindow *gameWindow;
     NextWindow *nextWindow;
+    SoundManager *soundManager;
 
     void setupUI();
 };
