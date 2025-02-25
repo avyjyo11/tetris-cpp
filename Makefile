@@ -6,3 +6,6 @@ run:
 
 br:
 	make bld && make run
+
+test:
+	./build/TetrisTests

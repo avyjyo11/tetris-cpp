@@ -26,7 +26,6 @@ public:
     int getY() const;
     RGB getColor() const;
 
-
 protected:
     std::vector<std::vector<uint8_t>> grid;
     RGB color;

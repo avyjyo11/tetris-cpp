@@ -27,7 +27,10 @@ public:
     void pauseGame();
     void restartGame();
     bool isRunning() const;
+    void fillRow(int row, const RGB& color);
+    
     unsigned int getScore() const;
+    std::vector<std::vector<std::optional<RGB>>>* getGrid();
 
 protected:
     void paintEvent(QPaintEvent *event) override; 

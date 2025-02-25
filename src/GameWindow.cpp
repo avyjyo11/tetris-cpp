@@ -178,3 +178,14 @@ void GameWindow::clearLines() {
         }
     }
 }
+
+void GameWindow::fillRow(int rowIndex, const RGB& color) {
+    if (rowIndex >= 0 && rowIndex < ROWS) {
+        // Fill the row with the given color
+        std::fill(grid[rowIndex].begin(), grid[rowIndex].end(), color);
+    }
+}
+
+std::vector<std::vector<std::optional<RGB>>>* GameWindow::getGrid() {
+    return &grid;
+}

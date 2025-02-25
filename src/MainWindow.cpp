@@ -1,5 +1,6 @@
 #include "../include/MainWindow.h"
 #include "../include/GameWindow.h"
+#include "../include/SoundManager.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -8,12 +9,13 @@
 #include <QWidget>
 #include <QFileDialog>
 #include <QPushButton>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), playButton(nullptr), restartButton(nullptr), gameWindow(nullptr) {
     setWindowTitle("Tetris Game");
     // resize(400, 600); // Adjust to fit Tetris gameplay area
     setupUI();
-    soundManager = new SoundManager();
+    soundManager = new SoundManager(this);
 }
 
 MainWindow::~MainWindow() {
@@ -110,5 +112,7 @@ void MainWindow::loadMusic() {
     QString filePath = QFileDialog::getOpenFileName(this, "Load Music", "", "Audio Files (*.mp3 *.wav *.aac)");
     if (!filePath.isEmpty()) {
         soundManager->loadMusic(filePath);
+    } else {
+        QMessageBox::warning(nullptr, "No File Selected", "No audio file selected.");
     }
 }
